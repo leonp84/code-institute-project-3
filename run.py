@@ -48,7 +48,7 @@ def view_vault():
     for i in current_user.get_all_values()[1:]:
         table.add_row(i)
     print(table)
-    print('\Press any key to return to main menu.')
+    print('\nPress any key to return to main menu.')
     key = getch.getch()
     return
 
