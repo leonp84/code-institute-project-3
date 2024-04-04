@@ -53,23 +53,27 @@ def typewr(text):
 
 def view_vault():
     show = False
-    gsheet_vals = SHEET.worksheet('test').col_values(4)[1:]
+    gsheet_ids = SHEET.worksheet(current_user.title).col_values(1)[1:]
+    gsheet_services = SHEET.worksheet(current_user.title).col_values(2)[1:]
+    gsheet_usernames = SHEET.worksheet(current_user.title).col_values(3)[1:]
+    gsheet_passwords = SHEET.worksheet(current_user.title).col_values(4)[1:]
+    hide_pass_display = []
+    show_pass_display = []
+
+    for password in gsheet_passwords:
+        hide_pass_display.append('********')
+        show_pass_display.append(decrypt_password(password))
 
     while True:
         clear_screen()
-        temp_pass_display = []
-        if not show:
-            for i in gsheet_vals:
-                temp_pass_display.append('********')
-        else:
-            for i in gsheet_vals:
-                temp_pass_display.append(decrypt_password(i))
-
         table = PrettyTable()
-        table.add_column("Entry ID",(SHEET.worksheet('test').col_values(1)[1:]))
-        table.add_column("Service",(SHEET.worksheet('test').col_values(2)[1:]))
-        table.add_column("Username",(SHEET.worksheet('test').col_values(3)[1:]))
-        table.add_column("Password",temp_pass_display)
+        table.add_column("Entry ID", gsheet_ids)
+        table.add_column("Service", gsheet_services)
+        table.add_column("Username", gsheet_usernames)
+        if show:
+            table.add_column("Password", hide_pass_display)
+        else:
+            table.add_column("Password", show_pass_display)
         print(table)
         print('\nPress ' + Fore.BLUE + 'Space Bar' + Style.RESET_ALL + ' to show/hide passwords')
         print('Press ' + Fore.YELLOW + 'Enter' + Style.RESET_ALL + ' to return to the main menu')
