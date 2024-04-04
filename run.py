@@ -13,6 +13,14 @@ import hashlib # For Hashing Login Passwords of Users (for this app)
 import re # For Checking password strength with Regular Expressions
 from prettytable import PrettyTable # Table Display
 
+# Imports below all deal with Password Encryption & Decription
+import cryptography
+from cryptography.fernet import Fernet
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+import base64
+
 os.system("clear")
 
 # Google Sheet Credentials
@@ -26,9 +34,10 @@ GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 # Initialise Users Information from Google Sheets
 SHEET = GSPREAD_CLIENT.open('vault_guard_db')
 user_data = SHEET.worksheet('users')
-login_usernames = user_data.col_values(1)[1:]
-login_passwords = user_data.col_values(2)[1:]
+login_usernames = user_data.col_values(1)
+login_passwords = user_data.col_values(2)
 current_user = None
+key_source = None
 
 def clear_screen():
     os.system("clear")
@@ -45,7 +54,7 @@ def typewr(text):
 def view_vault():
     table = PrettyTable()
     table.field_names = ["ID", "Service", "Username", "Password"]
-    for i in current_user.get_all_values()[1:]:
+    for i in current_user.get_all_values():
         table.add_row(i)
     print(table)
     print('\nPress any key to return to main menu.')
@@ -86,6 +95,36 @@ def display_login_menu():
     menu.append_item(item5)
 
     return menu.show()
+
+
+def encrypt_password(p):
+    salt = bytes(key_source.encode('utf-8'))
+    kdf = PBKDF2HMAC(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=salt,
+        iterations=480000,
+        backend=default_backend()
+    )
+    key = base64.urlsafe_b64encode(kdf.derive(bytes(key_source.encode('utf-8'))))
+    FKEY = Fernet(key)
+    # ** Encrypt and return password using Fernet Key **
+    return FKEY.encrypt(p.encode()).decode()
+
+
+def decrypt_password(p):
+    salt = bytes(key_source.encode('utf-8'))
+    kdf = PBKDF2HMAC(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=salt,
+        iterations=480000,
+        backend=default_backend()
+    )
+    key = base64.urlsafe_b64encode(kdf.derive(bytes(key_source.encode('utf-8'))))
+    FKEY = Fernet(key)
+    # ** Encrypt and return password using Fernet Key **
+    return FKEY.decrypt(p).decode()
 
     
 def correct_password(user_id, user_password):
@@ -136,6 +175,8 @@ def login():
                 user_password += str(key)
             if correct_password(user_id, user_password):
                 global current_user
+                global key_source
+                key_source = user_password
                 current_user = SHEET.worksheet(user_name)
                 display_login_menu()
                 break
@@ -260,21 +301,22 @@ def create_new_account():
             # Update Database with new User Login Data & new worksheet
             new_password_encoded = hashlib.sha256(bytes(new_password.encode('utf-8'))).hexdigest()
             user_data.append_row([new_username,new_password_encoded])
-            new_password = ''
             SHEET.add_worksheet(title=new_username, rows=1000, cols=4)
 
             # Close and reopen Google Sheet to ensure newest data available
             SHEET.client.session.close()
             SHEET = GSPREAD_CLIENT.open('vault_guard_db')
             user_data = SHEET.worksheet('users')
-            login_usernames = user_data.col_values(1)[1:]
-            login_passwords = user_data.col_values(2)[1:]
+            login_usernames = user_data.col_values(1)
+            login_passwords = user_data.col_values(2)
 
             print('\n\nAccount Created. You are now logged in.')
             typewr('\nPress any key to continue...')
             key = getch.getch()
             global current_user
-            current_user = SHEET.worksheet(user_name)
+            global key_source
+            key_source = new_password
+            current_user = SHEET.worksheet(new_username)
             display_login_menu()
             break
 
@@ -308,8 +350,11 @@ def display_main_menu():
     
 
 clear_screen()
-display_main_menu()
+# display_main_menu()
 
-
-
+table = PrettyTable()
+table.add_column("Entry ID",(SHEET.worksheet('test').col_values(1)[1:]))
+table.add_column("Service",(SHEET.worksheet('test').col_values(2)[1:]))
+table.add_column("Username",(SHEET.worksheet('test').col_values(3)[1:]))
+print(table)
 
