@@ -52,14 +52,32 @@ def typewr(text):
 
 
 def view_vault():
-    table = PrettyTable()
-    table.field_names = ["ID", "Service", "Username", "Password"]
-    for i in current_user.get_all_values():
-        table.add_row(i)
-    print(table)
-    print('\nPress any key to return to main menu.')
-    key = getch.getch()
-    return
+    show = False
+    gsheet_vals = SHEET.worksheet('test').col_values(4)[1:]
+
+    while True:
+        clear_screen()
+        temp_pass_display = []
+        if not show:
+            for i in gsheet_vals:
+                temp_pass_display.append('********')
+        else:
+            for i in gsheet_vals:
+                temp_pass_display.append(decrypt_password(i))
+
+        table = PrettyTable()
+        table.add_column("Entry ID",(SHEET.worksheet('test').col_values(1)[1:]))
+        table.add_column("Service",(SHEET.worksheet('test').col_values(2)[1:]))
+        table.add_column("Username",(SHEET.worksheet('test').col_values(3)[1:]))
+        table.add_column("Password",temp_pass_display)
+        print(table)
+        print('\nPress ' + Fore.BLUE + 'Space Bar' + Style.RESET_ALL + ' to show/hide passwords')
+        print('Press ' + Fore.YELLOW + 'Enter' + Style.RESET_ALL + ' to return to the main menu')
+        key = getch.getch()
+        if key == '\n':
+            break
+        elif key == ' ':
+            show = not show
 
 
 def add_to_vault():
@@ -350,11 +368,10 @@ def display_main_menu():
     
 
 clear_screen()
-# display_main_menu()
+display_main_menu()
 
-table = PrettyTable()
-table.add_column("Entry ID",(SHEET.worksheet('test').col_values(1)[1:]))
-table.add_column("Service",(SHEET.worksheet('test').col_values(2)[1:]))
-table.add_column("Username",(SHEET.worksheet('test').col_values(3)[1:]))
-print(table)
+
+
+
+
 
