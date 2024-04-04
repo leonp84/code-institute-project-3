@@ -2,6 +2,7 @@ ansiwrap==0.8.4
 cachetools==5.3.3
 colorama==0.4.6
 console-menu==0.8.0
+cryptography
 getch==1.0
 google-auth==2.29.0
 google-auth-oauthlib==1.2.0

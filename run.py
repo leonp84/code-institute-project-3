@@ -13,7 +13,7 @@ import hashlib # For Hashing Login Passwords of Users (for this app)
 import re # For Checking password strength with Regular Expressions
 from prettytable import PrettyTable # Table Display
 
-# Imports below all deal with Password Encryption & Decription
+# Imports below all deal with Password Encryption & Decryption
 import cryptography
 from cryptography.fernet import Fernet
 from cryptography.hazmat.backends import default_backend
@@ -65,12 +65,13 @@ def view_vault():
             for i in gsheet_vals:
                 temp_pass_display.append(decrypt_password(i))
 
-        table = PrettyTable()
-        table.add_column("Entry ID",(SHEET.worksheet('test').col_values(1)[1:]))
-        table.add_column("Service",(SHEET.worksheet('test').col_values(2)[1:]))
-        table.add_column("Username",(SHEET.worksheet('test').col_values(3)[1:]))
-        table.add_column("Password",temp_pass_display)
-        print(table)
+        print(temp_pass_display)
+        # table = PrettyTable()
+        # table.add_column("Entry ID",(SHEET.worksheet('test').col_values(1)[1:]))
+        # table.add_column("Service",(SHEET.worksheet('test').col_values(2)[1:]))
+        # table.add_column("Username",(SHEET.worksheet('test').col_values(3)[1:]))
+        # table.add_column("Password",temp_pass_display)
+        # print(table)
         print('\nPress ' + Fore.BLUE + 'Space Bar' + Style.RESET_ALL + ' to show/hide passwords')
         print('Press ' + Fore.YELLOW + 'Enter' + Style.RESET_ALL + ' to return to the main menu')
         key = getch.getch()
