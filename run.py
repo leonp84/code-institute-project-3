@@ -102,7 +102,10 @@ def view_vault():
 def add_to_vault():
     print('Your Current Vault:\n')
     print(view_vault_read_only())
-    add_id = str(int(SHEET.worksheet(current_user.title).col_values(1)[-1])+1)
+    try:
+        add_id = str(int(SHEET.worksheet(current_user.title).col_values(1)[-1])+1)
+    except:
+        add_id = 1
 
     while True:
         add_service = input('\nPlease Enter New Service: \n')
@@ -371,6 +374,7 @@ def create_new_account():
             new_password_encoded = hashlib.sha256(bytes(new_password.encode('utf-8'))).hexdigest()
             user_data.append_row([new_username,new_password_encoded])
             SHEET.add_worksheet(title=new_username, rows=1000, cols=4)
+            SHEET.worksheet(new_username).append_row(['id', 'service', 'username', 'password'])
 
             # Close and reopen Google Sheet to ensure newest data available
             SHEET.client.session.close()
