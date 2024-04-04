@@ -11,10 +11,11 @@ import sys # For writing to terminal with effects
 import getch # Capture and record Keypresses
 import hashlib # For Hashing Login Passwords of Users (for this app)
 import re # For Checking password strength with Regular Expressions
+from prettytable import PrettyTable # Table Display
 
 os.system("clear")
 
-# Google Sheet Credentials and SHEET Variable
+# Google Sheet Credentials
 SCOPE = ["https://www.googleapis.com/auth/spreadsheets",
          "https://www.googleapis.com/auth/drive.file",
          "https://www.googleapis.com/auth/drive"]
@@ -27,6 +28,7 @@ SHEET = GSPREAD_CLIENT.open('vault_guard_db')
 user_data = SHEET.worksheet('users')
 login_usernames = user_data.col_values(1)[1:]
 login_passwords = user_data.col_values(2)[1:]
+current_user = None
 
 def clear_screen():
     os.system("clear")
@@ -40,21 +42,48 @@ def typewr(text):
         time.sleep(0.03)
 
 
-def display_login_menu(user_name):
-    title = f"Welcome {user_name}"
+def view_vault():
+    table = PrettyTable()
+    table.field_names = ["ID", "Service", "Username", "Password"]
+    for i in current_user.get_all_values()[1:]:
+        table.add_row(i)
+    print(table)
+    print('\Press any key to return to main menu.')
+    key = getch.getch()
+    return
+
+
+def add_to_vault():
+    return
+
+
+def edit_vault_item():
+    return
+
+
+def delete_from_vault():
+    return
+
+
+def check_leaks():
+    return
+
+
+def display_login_menu():
+    title = f"Welcome {current_user.title.capitalize()}"
     subtitle = " * Please select an option. *"
     menu = ConsoleMenu(title, subtitle)
-    view_vault = FunctionItem("Show Saved Passwords", None)
-    add_to_vault = FunctionItem("Add a New Password", None)
-    edit_vault_item = FunctionItem("Edit a Vault Item", None)
-    delete_from_vault = FunctionItem("Delete a Vault Item", None)
-    check_leaks = FunctionItem("Check for exposed Passwords", None)
+    item1 = FunctionItem("Show Saved Passwords", view_vault)
+    item2 = FunctionItem("Add a New Password", add_to_vault)
+    item3 = FunctionItem("Edit a Vault Item", edit_vault_item)
+    item4 = FunctionItem("Delete a Vault Item", delete_from_vault)
+    item5 = FunctionItem("Check for exposed Passwords", check_leaks) 
 
-    menu.append_item(view_vault)
-    menu.append_item(add_to_vault)
-    menu.append_item(edit_vault_item)
-    menu.append_item(delete_from_vault)
-    menu.append_item(check_leaks)
+    menu.append_item(item1)
+    menu.append_item(item2)
+    menu.append_item(item3)
+    menu.append_item(item4)
+    menu.append_item(item5)
 
     return menu.show()
 
@@ -106,7 +135,9 @@ def login():
                 sys.stdout.flush()
                 user_password += str(key)
             if correct_password(user_id, user_password):
-                display_login_menu(user_name)
+                global current_user
+                current_user = SHEET.worksheet(user_name)
+                display_login_menu()
                 break
             else:
                 print('\n')
@@ -122,8 +153,8 @@ def login():
 
 
 def strong_password(password, password2):
+    
     # 1: Length, 2: Uppercase, 3: Lowercase, 4: Number, 5: Special Character, 6: Match
-
     strong_pass = []
     strong_pass.append(len(password) >= 8)
     strong_pass.append(bool(re.search("[A-Z]", password)))
@@ -131,8 +162,8 @@ def strong_password(password, password2):
     strong_pass.append(bool(re.search("[0-9]", password)))
     strong_pass.append(bool(re.search(r'[!@#$%^&*()\[\]\-=_\\|;:,.<>?/~`"]', password)))
     strong_pass.append(password == password2)
-    # Write out Password Characteristics
 
+    # Write out Password Characteristics
     if all(strong_pass):
         typewr('\n' + Back.GREEN + ' PASSWORD IS STRONG \n')
     else:
@@ -242,7 +273,9 @@ def create_new_account():
             print('\n\nAccount Created. You are now logged in.')
             typewr('\nPress any key to continue...')
             key = getch.getch()
-            display_login_menu(new_username)
+            global current_user
+            current_user = SHEET.worksheet(user_name)
+            display_login_menu()
             break
 
         else:
