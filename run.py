@@ -50,6 +50,21 @@ def typewr(text):
         sys.stdout.flush()
         time.sleep(0.03)
 
+def view_vault_read_only():
+    gsheet_ids = SHEET.worksheet(current_user.title).col_values(1)[1:]
+    gsheet_services = SHEET.worksheet(current_user.title).col_values(2)[1:]
+    gsheet_usernames = SHEET.worksheet(current_user.title).col_values(3)[1:]
+    gsheet_passwords = SHEET.worksheet(current_user.title).col_values(4)[1:]
+    hide_pass_display = []
+    for password in gsheet_passwords:
+        hide_pass_display.append('********')
+    table = PrettyTable()
+    table.add_column("Entry ID", gsheet_ids)
+    table.add_column("Service", gsheet_services)
+    table.add_column("Username", gsheet_usernames)
+    table.add_column("Password", hide_pass_display)
+    return table
+
 
 def view_vault():
     show = False
@@ -71,9 +86,9 @@ def view_vault():
         table.add_column("Service", gsheet_services)
         table.add_column("Username", gsheet_usernames)
         if show:
-            table.add_column("Password", hide_pass_display)
-        else:
             table.add_column("Password", show_pass_display)
+        else:
+            table.add_column("Password", hide_pass_display)
         print(table)
         print('\nPress ' + Fore.BLUE + 'Space Bar' + Style.RESET_ALL + ' to show/hide passwords')
         print('Press ' + Fore.YELLOW + 'Enter' + Style.RESET_ALL + ' to return to the main menu')
@@ -85,6 +100,38 @@ def view_vault():
 
 
 def add_to_vault():
+    print('Your Current Vault:\n')
+    print(view_vault_read_only())
+    add_id = str(int(SHEET.worksheet(current_user.title).col_values(1)[-1])+1)
+
+    while True:
+        add_service = input('\nPlease Enter New Service: \n')
+        if not (re.findall(r"\w", add_service)):
+            print(Back.RED + 'Please Enter a valid service name.' + Style.RESET_ALL)
+        else:
+            break
+    
+    while True:
+        add_username = input('\nPlease Enter New Username: \n')
+        if not (re.findall(r"\w", add_username)):
+            print(Back.RED + 'Please Enter a valid Username name.' + Style.RESET_ALL)
+            print(Fore.YELLOW + 'If no Username is needed, type "None"' + Style.RESET_ALL)
+        else:
+            break
+    
+    while True:
+        add_password = input('\nPlease Enter New Password: \n')
+        if not (re.findall(r"\w", add_password)):
+            print(Back.RED + 'Please Enter a valid Password.' + Style.RESET_ALL)
+        else:
+            break
+
+    en_password = encrypt_password(add_password)
+    current_user.append_row([add_id,add_service,add_username,en_password])
+    print('\n' + Fore.GREEN + 'Your Updated Vault:' + Style.RESET_ALL + '\n')
+    print(view_vault_read_only())
+    print('\nPress any key to return to the main menu.')
+    key = getch.getch()
     return
 
 
