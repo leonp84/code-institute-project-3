@@ -86,8 +86,8 @@ def display_main_menu():
     return menu.show()
     
 clear_screen()
-login()
-# display_main_menu()
+# login()
+display_main_menu()
 
 
 
