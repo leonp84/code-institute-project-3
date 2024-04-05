@@ -341,7 +341,31 @@ def delete_from_vault():
 
 def check_leaks():
 
+    typewr('The list of passwords in your vault '
+           'will now be checked against a \n')
+    typewr('known list of compromised passwords on' + Fore.BLUE +
+           ' https://haveibeenpwned.com/\n' + Style.RESET_ALL)
+    time.sleep(1)
+    typewr('\nFor this purpose, ' + Fore.YELLOW + 'encrypted ("hashed") '
+           + Style.RESET_ALL +
+           'versions of your passwords\n')
+    typewr('are sent to haveibeenpwned.com for security purposes.\n')
+    time.sleep(1)
+
+    print('\nPress y to continue or any other key to return to the main menu')
+    key = getch.getch()
+    if key.lower() != 'y':
+        return
+
+    print('\n')
     test_data = (current_user.get_all_values()[1:])
+
+    print('Now accessing data from haveibeenpwned.com | Please wait...')
+    for i in range(59):
+        sys.stdout.write('.')
+        sys.stdout.flush()
+        time.sleep(0.05)
+    print('\n')
 
     for i in range(len(test_data)):
         d_pass = decrypt_password(test_data[i][3])
@@ -369,7 +393,8 @@ def check_leaks():
         print('\n' + Back.RED + 'Consider changing these passwords as '
                                 'soon as possible' + Style.RESET_ALL + '\n')
     else:
-        print('Congratulations, no compromised passwords were found.')
+        print(Fore.GREEN + 'Congratulations, no compromised passwords '
+                           'were found.' + Style.RESET_ALL)
 
     print('Press any key to return to the main menu')
     key = getch.getch()
@@ -662,9 +687,4 @@ def display_main_menu():
 
 
 clear_screen()
-# display_main_menu()
-
-current_user = SHEET.worksheet('test')
-key_source = '12345'
-
-check_leaks()
+display_main_menu()
