@@ -73,9 +73,8 @@ def view_vault_read_only():
     table.add_column("Username", gsheet_usernames)
     table.add_column("Password", hide_pass_display)
     print(table)
-    if len(gsheet_ids) < 2:
+    if len(gsheet_ids) == 0:
         print(Fore.YELLOW + '\nYour Vault is currently empty. Please add your first item.\n' + Style.RESET_ALL)
-    return
 
 
 def view_vault():
@@ -102,7 +101,7 @@ def view_vault():
         else:
             table.add_column("Password", hide_pass_display)
         print(table)
-        if len(gsheet_ids) < 2:
+        if len(gsheet_ids) == 0:
             print(Fore.YELLOW + '\nYour Vault is currently empty. Please add your first item.\n' + Style.RESET_ALL)
         print('\nPress ' + Fore.BLUE + 'Space Bar' + Style.RESET_ALL + ' to show/hide passwords')
         print('Press ' + Fore.YELLOW + 'Enter' + Style.RESET_ALL + ' to return to the main menu')
@@ -149,10 +148,65 @@ def add_to_vault():
     print(view_vault_read_only())
     print('\nPress any key to return to the main menu.')
     key = getch.getch()
-    return
 
 
 def edit_vault_item():
+    gsheet_ids = SHEET.worksheet(current_user.title).col_values(1)[1:]
+    print('Your Current Vault:\n')
+    view_vault_read_only()
+    
+    # Send users back to the main menu if their vaults are empty
+    if len(gsheet_ids) == 0:
+        print('You cannot edit from an empty vault.')
+        print('\nPress any key to return to the main menu.')
+        key = getch.getch()
+        return
+    
+    print('\n')
+    while True:
+        to_edit = input('Please Enter the ID (in digits) of the vault item you would like to edit: \n')
+        if to_edit not in gsheet_ids:
+            print(Back.RED + '\n           That is not a valid ID               ' 
+                                                                + Style.RESET_ALL)
+            print('            Press Enter to try again')
+            print(' Or press any other key to return to the Main Menu\n')
+            key = getch.getch()
+            if key == '\n':
+                continue
+            else:
+                return
+        else:
+            break
+        
+    # Ask User for new information with which to edit item
+    while True:
+        add_service = input('\nPlease Enter New Service: \n')
+        if not (re.findall(r"\w", add_service)):
+            print(Back.RED + 'Please Enter a valid service name.' + Style.RESET_ALL)
+        else:
+            break
+
+    while True:
+        add_username = input('\nPlease Enter New Username: \n')
+        if not (re.findall(r"\w", add_username)):
+            print(Back.RED + 'Please Enter a valid Username name.' + Style.RESET_ALL)
+            print(Fore.YELLOW + 'If no Username is needed, type "None"' + Style.RESET_ALL)
+        else:
+            break
+        
+    while True:
+        add_password = input('\nPlease Enter New Password: \n')
+        if not (re.findall(r"\w", add_password)):
+            print(Back.RED + 'Please Enter a valid Password.' + Style.RESET_ALL)
+        else:
+            break
+
+    to_edit = int(to_edit)+1
+    current_user.update_cell(to_edit, 2, add_service)
+    current_user.update_cell(to_edit, 3, add_username)
+    current_user.update_cell(to_edit, 4, encrypt_password(add_password))
+    print('\nItem ' + Fore.BLUE + f'ID# {to_edit-1}' + Style.RESET_ALL + ' Updated. Press any key to return to the main Menu')
+    key = getch.getch()
     return
 
 
@@ -160,6 +214,14 @@ def delete_from_vault():
     gsheet_ids = SHEET.worksheet(current_user.title).col_values(1)[1:]
     print('Your Current Vault:\n')
     view_vault_read_only()
+    
+    # Send users back to the main menu if their vaults are empty
+    if len(gsheet_ids) == 0:
+        print('You cannot delete from an empty vault.')
+        print('\nPress any key to return to the main menu.')
+        key = getch.getch()
+        return
+    
     print('\n')
     while True:
         to_del = input('Please Enter the ID (in digits) of the vault item you would like to delete: \n')
@@ -185,7 +247,7 @@ def delete_from_vault():
     print('Press any other key to return to the main menu')
     key = getch.getch()
     if key == 'y' or key == 'Y':
-        SHEET.worksheet(current_user.title).delete_rows(int(to_del))
+        SHEET.worksheet(current_user.title).delete_rows(int(to_del)+1)
         reorder_list_ids()
         print('\nItem Deleted. Press any key to return to the main Menu')
         key = getch.getch()
@@ -469,9 +531,16 @@ def display_main_menu():
     return menu.show()
 
 key_source = '12345'
+current_user = SHEET.worksheet('test')
+
 
 clear_screen()
 display_main_menu()
+
+
+
+
+
 
 
 
