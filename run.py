@@ -63,7 +63,10 @@ def view_vault_read_only():
     table.add_column("Service", gsheet_services)
     table.add_column("Username", gsheet_usernames)
     table.add_column("Password", hide_pass_display)
-    return table
+    print(table)
+    if len(gsheet_ids) < 2:
+        print(Fore.YELLOW + '\nYour Vault is currently empty. Please add your first item.\n' + Style.RESET_ALL)
+    return
 
 
 def view_vault():
@@ -90,6 +93,8 @@ def view_vault():
         else:
             table.add_column("Password", hide_pass_display)
         print(table)
+        if len(gsheet_ids) < 2:
+            print(Fore.YELLOW + '\nYour Vault is currently empty. Please add your first item.\n' + Style.RESET_ALL)
         print('\nPress ' + Fore.BLUE + 'Space Bar' + Style.RESET_ALL + ' to show/hide passwords')
         print('Press ' + Fore.YELLOW + 'Enter' + Style.RESET_ALL + ' to return to the main menu')
         key = getch.getch()
@@ -101,7 +106,7 @@ def view_vault():
 
 def add_to_vault():
     print('Your Current Vault:\n')
-    print(view_vault_read_only())
+    view_vault_read_only()
     try:
         add_id = str(int(SHEET.worksheet(current_user.title).col_values(1)[-1])+1)
     except:
@@ -143,7 +148,42 @@ def edit_vault_item():
 
 
 def delete_from_vault():
-    return
+    gsheet_ids = SHEET.worksheet(current_user.title).col_values(1)[1:]
+    print('Your Current Vault:\n')
+    view_vault_read_only()
+    print('\n')
+    while True:
+        to_del = input('Please Enter the ID (in digits) of the vault item you would like to delete: \n')
+        if to_del not in gsheet_ids:
+            print(Back.RED + '\n           That is not a valid ID               ' 
+                                                                + Style.RESET_ALL)
+            print('            Press Enter to try again')
+            print(' Or press any other key to return to the Main Menu\n')
+            key = getch.getch()
+            if key == '\n':
+                continue
+            else:
+                return
+        else:
+            break
+    row_to_del = SHEET.worksheet(current_user.title).get_all_values()[int(to_del)]
+    print('\n' + Back.RED + 'Are you sure you want to delete the following item?' + Style.RESET_ALL)
+    table = PrettyTable()
+    table.field_names = ["Entry ID", "Service", "Username", "Password"]
+    table.add_row([row_to_del[0],row_to_del[1],row_to_del[2],decrypt_password(row_to_del[3])])
+    print(table)
+    print('\n' + Fore.RED + ' ** Press y to delete ** ' + Style.RESET_ALL)
+    print('Press any other key to return to the main menu')
+    key = getch.getch()
+    if key == 'y' or key == 'Y':
+        SHEET.worksheet(current_user.title).delete_rows(int(to_del))
+        print('Item Deleted. Press any key to return to the main Menu')
+        key = getch.getch()
+    else:
+        return
+
+
+
 
 
 def check_leaks():
@@ -420,11 +460,15 @@ def display_main_menu():
     menu.append_item(login_item)
     menu.append_item(create_account_item)
     return menu.show()
-    
+
+key_source = '12345'
 
 clear_screen()
-display_main_menu()
+# display_main_menu()
 
+current_user = SHEET.worksheet('test')
+
+delete_from_vault()
 
 
 
