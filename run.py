@@ -1,22 +1,22 @@
-##############################################################################
-import gspread # Google Sheet Data
-from google.oauth2.service_account import Credentials # Google Sheets Access
-from pprint import pprint # Temp, for debugging
-import os # For terminal clearing
-from consolemenu import * # Menu Generation
-from consolemenu.items import * # Menu Item Generation
-from colorama import Fore, Back, Style, init # Terminal Text Colours
-import time # for delays
-import sys # For writing to terminal with effects
-import getch # Capture and record Keypresses
-import hashlib # For Hashing Login Passwords of Users (for this app)
-import re # For Checking password strength with Regular Expressions
+################################################################################
+import gspread  # Google Sheet Data
+from google.oauth2.service_account import Credentials  # Google Sheets Access
+from pprint import pprint  # Temp, for debugging
+import os  # For terminal clearing
+from consolemenu import *  # Menu Generation
+from consolemenu.items import *  # Menu Item Generation
+from colorama import Fore, Back, Style, init  # Terminal Text Colours
+import time  # for delays
+import sys  # For writing to terminal with effects
+import getch  # Capture and record Keypresses
+import hashlib  # For Hashing Login Passwords of Users (for this app)
+import re  # For Checking password strength with Regular Expressions
 from prettytable import PrettyTable # Table Display
-import re # For generating random passwords
-import random # For generating random passwords
-import pyhibp # Library for interacting with 'Have I Been Pwned'
-from pyhibp import pwnedpasswords as pw # Library for interacting with 'Have I Been Pwned'
+import re  # For generating random passwords
+import random  # For generating random passwords
 
+# Imports below are for interacting with the 'Have I Been Pwned' API
+from pyhibp import pwnedpasswords as pw 
 
 # Imports below all deal with Password Encryption & Decryption
 import cryptography
@@ -59,7 +59,8 @@ def typewr(text):
 
 def reorder_list_ids():
     '''
-    This function Reorders the IDs of a user database, after an item has been deleted
+    This function Reorders the IDs of a user database, after an item has 
+    been deleted.
     '''
     for i in range(1,len(current_user.col_values(1)[1:])+1):
         current_user.update_cell(i+1, 1, i)
@@ -70,7 +71,8 @@ def generate_password():
     Generate a strong random password for user
     '''
     while True:
-        length = input('\nPlease Enter Generated Password Length (minimum 8 characters): \n')
+        length = input(('\nPlease Enter Generated Password Length'
+                                            ' (minimum 8 characters): \n'))
         if not (length.isdigit()) or int(length) < 8:
             print(Back.RED + 'Please Enter a valid Length.' + Style.RESET_ALL)
         else:
