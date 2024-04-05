@@ -14,6 +14,9 @@ import re # For Checking password strength with Regular Expressions
 from prettytable import PrettyTable # Table Display
 import re # For generating random passwords
 import random # For generating random passwords
+import pyhibp # Library for interacting with 'Have I Been Pwned'
+from pyhibp import pwnedpasswords as pw # Library for interacting with 'Have I Been Pwned'
+
 
 # Imports below all deal with Password Encryption & Decryption
 import cryptography
@@ -241,9 +244,12 @@ def edit_vault_item():
             break
         
     while True:
-        add_password = input('\nPlease Enter New Password: \n')
+        add_password = input('\nPlease Enter New Password or type "generate" to have one generated: \n')
         if not (re.findall(r"\w", add_password)):
             print(Back.RED + 'Please Enter a valid Password.' + Style.RESET_ALL)
+        elif add_password.lower() == 'generate':
+            add_password = generate_password()
+            break
         else:
             break
 
@@ -302,7 +308,37 @@ def delete_from_vault():
 
 
 def check_leaks():
-    return
+
+    test_data = (current_user.get_all_values()[1:])
+ 
+    for i in range(len(test_data)):
+        d_pass = decrypt_password(test_data[i][3])
+        del test_data[i][3]
+        test_data[i].append(d_pass)
+
+    table = PrettyTable()
+    table.field_names = ["Entry ID", "Service", "Username", "Password", "Data Breaches"]
+
+    pyhibp.set_user_agent(ua="VaultGuard v1.0 (Code Institute Test Project)")
+
+    any_passwords_breached = False
+
+    for i in range(len(test_data)):
+        breached = pw.is_password_breached(password=test_data[i][3])
+        if breached:
+            any_passwords_breached = True
+            test_data[i].append(breached)
+            table.add_row(test_data[i])
+
+    if any_passwords_breached:
+        print('\nThe following passwords were found to be compromised\n')
+        print(table)
+        print('\n' + Back.RED + 'Consider changing these passwords as soon as possible' + Style.RESET_ALL + '\n')
+    else:
+        print('Congratulations, no compromised passwords were found.')
+    
+    print('Press any key to return to the main menu')
+    key = getch.getch()
 
 
 def display_login_menu():
@@ -577,6 +613,7 @@ def display_main_menu():
 
 clear_screen()
 display_main_menu()
+
 
 
 
