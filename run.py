@@ -12,6 +12,8 @@ import getch # Capture and record Keypresses
 import hashlib # For Hashing Login Passwords of Users (for this app)
 import re # For Checking password strength with Regular Expressions
 from prettytable import PrettyTable # Table Display
+import re # For generating random passwords
+import random # For generating random passwords
 
 # Imports below all deal with Password Encryption & Decryption
 import cryptography
@@ -39,6 +41,7 @@ login_passwords = user_data.col_values(2)
 current_user = None
 key_source = None
 
+
 def clear_screen():
     os.system("clear")
 
@@ -57,6 +60,46 @@ def reorder_list_ids():
     '''
     for i in range(1,len(current_user.col_values(1)[1:])+1):
         current_user.update_cell(i+1, 1, i)
+
+
+def generate_password():
+    '''
+    Generate a strong random password for user
+    '''
+    while True:
+        length = input('\nPlease Enter Generated Password Length (minimum 8 characters): \n')
+        if not (length.isdigit()) or int(length) < 8:
+            print(Back.RED + 'Please Enter a valid Length.' + Style.RESET_ALL)
+        else:
+            length = int(length)
+            break
+
+    p1 = [i for i in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ']
+    p2 = [i for i in 'abcdefghijklmnopqrstuvwxyz']
+    p3 = [i for i in '0123456789']
+    p4 = [i for i in '!@#$%^&*()-_=[]|;:,.<>?/~`"']
+    p5 = [p1, p2, p3, p4]
+    
+    while True:
+        new_password = ''
+        for i in range(length):
+            item = random.choice(p5)
+            new_password += random.choice(item)
+
+        strong_pass = []
+        # strong_pass.append(len(new_password) >= 8)
+        strong_pass.append(bool(re.search("[A-Z]", new_password)))
+        strong_pass.append(bool(re.search("[a-z]", new_password)))
+        strong_pass.append(bool(re.search("[0-9]", new_password)))
+        strong_pass.append(bool(re.search(r'[!@#$%^&*()\[\]\-=_\\|;:,.<>?/~`"]', new_password)))
+        if all(strong_pass):
+            break
+        else:
+            continue
+    print('\nYour generated Password: ' + Fore.YELLOW + new_password + Style.RESET_ALL)
+    print('\nPress any key to continue')
+    key = getch.getch()
+    return new_password
 
 
 def view_vault_read_only():
@@ -136,16 +179,19 @@ def add_to_vault():
             break
     
     while True:
-        add_password = input('\nPlease Enter New Password: \n')
+        add_password = input('\nPlease Enter New Password or type "generate" to have one generated: \n')
         if not (re.findall(r"\w", add_password)):
             print(Back.RED + 'Please Enter a valid Password.' + Style.RESET_ALL)
+        elif add_password.lower() == 'generate':
+            add_password = generate_password()
+            break
         else:
             break
 
     en_password = encrypt_password(add_password)
     current_user.append_row([add_id,add_service,add_username,en_password])
     print('\n' + Fore.GREEN + 'Your Updated Vault:' + Style.RESET_ALL + '\n')
-    print(view_vault_read_only())
+    view_vault_read_only()
     print('\nPress any key to return to the main menu.')
     key = getch.getch()
 
@@ -315,7 +361,6 @@ def correct_password(user_id, user_password):
 
 def login():
 
-    pprint(login_usernames) # Debug
     while True:
         clear_screen()
 
@@ -345,8 +390,7 @@ def login():
                 if user_name == item:
                     user_id = num
             user_password = ''
-            print('\n')
-            print("Please Enter your password...")
+            print("\nPlease Enter your password...")
             while True:
                 key = getch.getch()
                 if key == '\n':
@@ -530,14 +574,9 @@ def display_main_menu():
     menu.append_item(create_account_item)
     return menu.show()
 
-key_source = '12345'
-current_user = SHEET.worksheet('test')
-
 
 clear_screen()
 display_main_menu()
-
-
 
 
 
