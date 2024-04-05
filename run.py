@@ -1,7 +1,5 @@
-###############################################################################
 import gspread  # Google Sheet Data
 from google.oauth2.service_account import Credentials  # Google Sheets Access
-from pprint import pprint  # Temp, for debugging
 import os  # For terminal clearing
 from consolemenu import *  # Menu Generation
 from consolemenu.items import *  # Menu Item Generation
@@ -27,9 +25,7 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 import base64
 
-os.system("clear")
-
-# Google Sheet Credentials
+# Google Sheet Access Credentials
 SCOPE = ["https://www.googleapis.com/auth/spreadsheets",
          "https://www.googleapis.com/auth/drive.file",
          "https://www.googleapis.com/auth/drive"]
@@ -112,6 +108,9 @@ def generate_password():
 
 
 def view_vault_read_only():
+    '''
+    Displays vault before CRUD operations
+    '''
     gsheet_ids = SHEET.worksheet(current_user.title).col_values(1)[1:]
     gsheet_services = SHEET.worksheet(current_user.title).col_values(2)[1:]
     gsheet_usernames = SHEET.worksheet(current_user.title).col_values(3)[1:]
@@ -131,6 +130,9 @@ def view_vault_read_only():
 
 
 def view_vault():
+    '''
+    Displays vault with the option to reveal passwords
+    '''
     show = False
     gsheet_ids = SHEET.worksheet(current_user.title).col_values(1)[1:]
     gsheet_services = SHEET.worksheet(current_user.title).col_values(2)[1:]
@@ -173,6 +175,10 @@ def view_vault():
 
 
 def add_to_vault():
+    '''
+    Allows user to add new stored credentials to vault, includes optional
+    STRONG password generator that the user may use.
+    '''
     print('Your Current Vault:\n')
     view_vault_read_only()
     try:
@@ -220,6 +226,10 @@ def add_to_vault():
 
 
 def edit_vault_item():
+    '''
+    Allows user to edit existing credentials in vault. Includes optional STRONG
+    password generator the user may use.
+    '''
     gsheet_ids = SHEET.worksheet(current_user.title).col_values(1)[1:]
     print('Your Current Vault:\n')
     view_vault_read_only()
@@ -290,6 +300,11 @@ def edit_vault_item():
 
 
 def delete_from_vault():
+    '''
+    Allows user to remove exsiting credential from vault. Requires confirmation
+    before deletion. Updates Credential ID's (on GSheet database) after
+    item deletion.
+    '''
     gsheet_ids = SHEET.worksheet(current_user.title).col_values(1)[1:]
     print('Your Current Vault:\n')
     view_vault_read_only()
@@ -340,7 +355,11 @@ def delete_from_vault():
 
 
 def check_leaks():
-
+    '''
+    Check for password breaches using the free API from haveibeenpwned.com
+    User Vault passwords are checked again the regularly updated database at
+    haveibeenpwned.com
+    '''
     typewr('The list of passwords in your vault '
            'will now be checked against a \n')
     typewr('known list of compromised passwords on' + Fore.BLUE +
@@ -401,6 +420,9 @@ def check_leaks():
 
 
 def display_login_menu():
+    '''
+    Displays menu for logged in users
+    '''
     title = f"Welcome {current_user.title.capitalize()}"
     subtitle = " * Please select an option. *"
     menu = ConsoleMenu(title, subtitle)
@@ -420,6 +442,10 @@ def display_login_menu():
 
 
 def encrypt_password(p):
+    '''
+    Uses SHA256 algorith to encrypt user passwords before writing them to the
+    Gsheet database.
+    '''
     salt = bytes(key_source.encode('utf-8'))
     kdf = PBKDF2HMAC(
         algorithm=hashes.SHA256(),
@@ -436,6 +462,10 @@ def encrypt_password(p):
 
 
 def decrypt_password(p):
+    '''
+    Uses SHA256 algorith to decrypt user passwords from the Gsheet database
+    to display them in plaintext within the app.
+    '''
     salt = bytes(key_source.encode('utf-8'))
     kdf = PBKDF2HMAC(
         algorithm=hashes.SHA256(),
@@ -457,7 +487,9 @@ def correct_password(user_id, user_password):
 
 
 def login():
-
+    '''
+    Allows user to login. Checks for data handling errors.
+    '''
     while True:
         clear_screen()
 
@@ -516,7 +548,10 @@ def login():
 
 
 def strong_password(password, password2):
-
+    '''
+    Check the strength of a new users password and displays info allowing user
+    to correct if a password is too weak.
+    '''
     # 1: Length
     # 2: Uppercase
     # 3: Lowercase
@@ -579,6 +614,12 @@ def strong_password(password, password2):
 
 
 def create_new_account():
+    '''
+    Allows user to create a new account. Checks for valid username and STRONG
+    password. If successfull, user credentials are stored in GSheet Database
+    (with the user password being Hashed for future comparison). A new user
+    database is then openened (a new GSheet Worksheet) to store user items.
+    '''
     global SHEET
     global user_data
     global login_usernames
@@ -671,6 +712,9 @@ def create_new_account():
 
 
 def display_main_menu():
+    '''
+    Welcome screen to greet users upon app opening.
+    '''
     f = open('banner.txt', 'r')
     lines = f.read()
     f.close()
