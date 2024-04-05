@@ -45,6 +45,9 @@ key_source = None
 
 
 def clear_screen():
+    '''
+    Clears the screen for improved visual experience in terminal
+    '''
     os.system("clear")
 
 
