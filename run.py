@@ -381,6 +381,14 @@ def check_leaks():
     User Vault passwords are checked against the regularly updated database at
     haveibeenpwned.com
     '''
+    # Send users back to the main menu if their vaults are empty
+    gsheet_ids = SHEET.worksheet(current_user.title).col_values(1)[1:]
+    if len(gsheet_ids) == 0:
+        print('Your vault is currently empty so cannot be checked.')
+        print('\nPress any key to return to the main menu.')
+        key = getch.getch()
+        return
+
     typewr('The list of passwords in your vault '
            'will now be checked against a \n')
     typewr('known list of compromised passwords on' + Fore.BLUE +
@@ -680,6 +688,7 @@ def create_new_account():
     print('\nInclude upper and lowercase letters, digits, special, characters')
     print('(such as "!" or "@"), and make it at least 8 characters long.\n')
 
+    # Ensure that usernames are valid, not in database, and not reserved word
     while True:
         new_username = input('Please enter your new username:\n')
         print('\n')
@@ -693,6 +702,12 @@ def create_new_account():
         if new_username == '' or new_username == ' ' or len(new_username) < 3:
             print(Back.RED + 'You entered an invalid username, '
                              'please try again' + Style.RESET_ALL)
+            print('         Press any key to try again\n')
+            key = getch.getch()
+            continue
+        if new_username.lower() == 'users':
+            print(Back.RED + 'You cannot use the word "users" for '
+                             'a username' + Style.RESET_ALL)
             print('         Press any key to try again\n')
             key = getch.getch()
             continue
