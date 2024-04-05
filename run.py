@@ -1,4 +1,4 @@
-################################################################################
+###############################################################################
 import gspread  # Google Sheet Data
 from google.oauth2.service_account import Credentials  # Google Sheets Access
 from pprint import pprint  # Temp, for debugging
@@ -11,12 +11,13 @@ import sys  # For writing to terminal with effects
 import getch  # Capture and record Keypresses
 import hashlib  # For Hashing Login Passwords of Users (for this app)
 import re  # For Checking password strength with Regular Expressions
-from prettytable import PrettyTable # Table Display
+from prettytable import PrettyTable  # Table Display
 import re  # For generating random passwords
 import random  # For generating random passwords
 
 # Imports below are for interacting with the 'Have I Been Pwned' API
-from pyhibp import pwnedpasswords as pw 
+import pyhibp
+from pyhibp import pwnedpasswords as pw
 
 # Imports below all deal with Password Encryption & Decryption
 import cryptography
@@ -59,10 +60,10 @@ def typewr(text):
 
 def reorder_list_ids():
     '''
-    This function Reorders the IDs of a user database, after an item has 
+    This function Reorders the IDs of a user database, after an item has
     been deleted.
     '''
-    for i in range(1,len(current_user.col_values(1)[1:])+1):
+    for i in range(1, len(current_user.col_values(1)[1:])+1):
         current_user.update_cell(i+1, 1, i)
 
 
@@ -72,7 +73,7 @@ def generate_password():
     '''
     while True:
         length = input(('\nPlease Enter Generated Password Length'
-                                            ' (minimum 8 characters): \n'))
+                        ' (minimum 8 characters): \n'))
         if not (length.isdigit()) or int(length) < 8:
             print(Back.RED + 'Please Enter a valid Length.' + Style.RESET_ALL)
         else:
@@ -84,7 +85,7 @@ def generate_password():
     p3 = [i for i in '0123456789']
     p4 = [i for i in '!@#$%^&*()-_=[]|;:,.<>?/~`"']
     p5 = [p1, p2, p3, p4]
-    
+
     while True:
         new_password = ''
         for i in range(length):
@@ -96,12 +97,15 @@ def generate_password():
         strong_pass.append(bool(re.search("[A-Z]", new_password)))
         strong_pass.append(bool(re.search("[a-z]", new_password)))
         strong_pass.append(bool(re.search("[0-9]", new_password)))
-        strong_pass.append(bool(re.search(r'[!@#$%^&*()\[\]\-=_\\|;:,.<>?/~`"]', new_password)))
+        strong_pass.append(bool(re.search(
+                        r'[!@#$%^&*()\[\]\-=_\\|;:,.<>?/~`"]', new_password)))
         if all(strong_pass):
             break
         else:
             continue
-    print('\nYour generated Password: ' + Fore.YELLOW + new_password + Style.RESET_ALL)
+
+    print('\nYour generated Password: ' + Fore.YELLOW + new_password
+                                        + Style.RESET_ALL)
     print('\nPress any key to continue')
     key = getch.getch()
     return new_password
@@ -122,7 +126,8 @@ def view_vault_read_only():
     table.add_column("Password", hide_pass_display)
     print(table)
     if len(gsheet_ids) == 0:
-        print(Fore.YELLOW + '\nYour Vault is currently empty. Please add your first item.\n' + Style.RESET_ALL)
+        print(Fore.YELLOW + '\nYour Vault is currently empty. '
+                            'Please add your first item.\n' + Style.RESET_ALL)
 
 
 def view_vault():
@@ -148,11 +153,18 @@ def view_vault():
             table.add_column("Password", show_pass_display)
         else:
             table.add_column("Password", hide_pass_display)
+
         print(table)
+
         if len(gsheet_ids) == 0:
-            print(Fore.YELLOW + '\nYour Vault is currently empty. Please add your first item.\n' + Style.RESET_ALL)
-        print('\nPress ' + Fore.BLUE + 'Space Bar' + Style.RESET_ALL + ' to show/hide passwords')
-        print('Press ' + Fore.YELLOW + 'Enter' + Style.RESET_ALL + ' to return to the main menu')
+            print(Fore.YELLOW + '\nYour Vault is currently empty. '
+                                'Please add your first item.\n'
+                                + Style.RESET_ALL)
+        print('\nPress ' + Fore.BLUE + 'Space Bar'
+                         + Style.RESET_ALL + ' to show/hide passwords')
+        print('Press ' + Fore.YELLOW + 'Enter'
+                       + Style.RESET_ALL + ' to return to the main menu')
+
         key = getch.getch()
         if key == '\n':
             break
@@ -164,29 +176,35 @@ def add_to_vault():
     print('Your Current Vault:\n')
     view_vault_read_only()
     try:
-        add_id = str(int(SHEET.worksheet(current_user.title).col_values(1)[-1])+1)
-    except:
+        add_id = str(int(SHEET.worksheet(current_user.title)
+                         .col_values(1)[-1])+1)
+    except Exception:
         add_id = 1
 
     while True:
         add_service = input('\nPlease Enter New Service: \n')
         if not (re.findall(r"\w", add_service)):
-            print(Back.RED + 'Please Enter a valid service name.' + Style.RESET_ALL)
+            print(Back.RED + 'Please Enter a valid service name.'
+                           + Style.RESET_ALL)
         else:
             break
-    
+
     while True:
         add_username = input('\nPlease Enter New Username: \n')
         if not (re.findall(r"\w", add_username)):
-            print(Back.RED + 'Please Enter a valid Username name.' + Style.RESET_ALL)
-            print(Fore.YELLOW + 'If no Username is needed, type "None"' + Style.RESET_ALL)
+            print(Back.RED + 'Please Enter a valid Username name.'
+                           + Style.RESET_ALL)
+            print(Fore.YELLOW + 'If no Username is needed, type "None"'
+                              + Style.RESET_ALL)
         else:
             break
-    
+
     while True:
-        add_password = input('\nPlease Enter New Password or type "generate" to have one generated: \n')
+        add_password = input('\nPlease Enter New Password or type '
+                             '"generate" to have one generated: \n')
         if not (re.findall(r"\w", add_password)):
-            print(Back.RED + 'Please Enter a valid Password.' + Style.RESET_ALL)
+            print(Back.RED + 'Please Enter a valid Password.'
+                           + Style.RESET_ALL)
         elif add_password.lower() == 'generate':
             add_password = generate_password()
             break
@@ -194,7 +212,7 @@ def add_to_vault():
             break
 
     en_password = encrypt_password(add_password)
-    current_user.append_row([add_id,add_service,add_username,en_password])
+    current_user.append_row([add_id, add_service, add_username, en_password])
     print('\n' + Fore.GREEN + 'Your Updated Vault:' + Style.RESET_ALL + '\n')
     view_vault_read_only()
     print('\nPress any key to return to the main menu.')
@@ -205,20 +223,21 @@ def edit_vault_item():
     gsheet_ids = SHEET.worksheet(current_user.title).col_values(1)[1:]
     print('Your Current Vault:\n')
     view_vault_read_only()
-    
+
     # Send users back to the main menu if their vaults are empty
     if len(gsheet_ids) == 0:
         print('You cannot edit from an empty vault.')
         print('\nPress any key to return to the main menu.')
         key = getch.getch()
         return
-    
+
     print('\n')
     while True:
-        to_edit = input('Please Enter the ID (in digits) of the vault item you would like to edit: \n')
+        to_edit = input('Please Enter the ID (in digits) of the vault item'
+                        ' you would like to edit: \n')
         if to_edit not in gsheet_ids:
-            print(Back.RED + '\n           That is not a valid ID               ' 
-                                                                + Style.RESET_ALL)
+            print(Back.RED + '\n          That is not a valid ID              '
+                           + Style.RESET_ALL)
             print('            Press Enter to try again')
             print(' Or press any other key to return to the Main Menu\n')
             key = getch.getch()
@@ -228,27 +247,32 @@ def edit_vault_item():
                 return
         else:
             break
-        
+
     # Ask User for new information with which to edit item
     while True:
         add_service = input('\nPlease Enter New Service: \n')
         if not (re.findall(r"\w", add_service)):
-            print(Back.RED + 'Please Enter a valid service name.' + Style.RESET_ALL)
+            print(Back.RED + 'Please Enter a valid service name.'
+                           + Style.RESET_ALL)
         else:
             break
 
     while True:
         add_username = input('\nPlease Enter New Username: \n')
         if not (re.findall(r"\w", add_username)):
-            print(Back.RED + 'Please Enter a valid Username name.' + Style.RESET_ALL)
-            print(Fore.YELLOW + 'If no Username is needed, type "None"' + Style.RESET_ALL)
+            print(Back.RED + 'Please Enter a valid Username name.'
+                           + Style.RESET_ALL)
+            print(Fore.YELLOW + 'If no Username is needed, type "None"'
+                              + Style.RESET_ALL)
         else:
             break
-        
+
     while True:
-        add_password = input('\nPlease Enter New Password or type "generate" to have one generated: \n')
+        add_password = input('\nPlease Enter New Password or type '
+                             '"generate" to have one generated: \n')
         if not (re.findall(r"\w", add_password)):
-            print(Back.RED + 'Please Enter a valid Password.' + Style.RESET_ALL)
+            print(Back.RED + 'Please Enter a valid Password.'
+                           + Style.RESET_ALL)
         elif add_password.lower() == 'generate':
             add_password = generate_password()
             break
@@ -259,7 +283,8 @@ def edit_vault_item():
     current_user.update_cell(to_edit, 2, add_service)
     current_user.update_cell(to_edit, 3, add_username)
     current_user.update_cell(to_edit, 4, encrypt_password(add_password))
-    print('\nItem ' + Fore.BLUE + f'ID# {to_edit-1}' + Style.RESET_ALL + ' Updated. Press any key to return to the main Menu')
+    print('\nItem ' + Fore.BLUE + f'ID# {to_edit-1}' + Style.RESET_ALL
+                    + ' Updated. Press any key to return to the main Menu')
     key = getch.getch()
     return
 
@@ -268,20 +293,21 @@ def delete_from_vault():
     gsheet_ids = SHEET.worksheet(current_user.title).col_values(1)[1:]
     print('Your Current Vault:\n')
     view_vault_read_only()
-    
+
     # Send users back to the main menu if their vaults are empty
     if len(gsheet_ids) == 0:
         print('You cannot delete from an empty vault.')
         print('\nPress any key to return to the main menu.')
         key = getch.getch()
         return
-    
+
     print('\n')
     while True:
-        to_del = input('Please Enter the ID (in digits) of the vault item you would like to delete: \n')
+        to_del = input('Please Enter the ID (in digits) of the vault item '
+                       'you would like to delete: \n')
         if to_del not in gsheet_ids:
-            print(Back.RED + '\n           That is not a valid ID               ' 
-                                                                + Style.RESET_ALL)
+            print(Back.RED + '\n          That is not a valid ID              '
+                           + Style.RESET_ALL)
             print('            Press Enter to try again')
             print(' Or press any other key to return to the Main Menu\n')
             key = getch.getch()
@@ -291,11 +317,15 @@ def delete_from_vault():
                 return
         else:
             break
-    row_to_del = SHEET.worksheet(current_user.title).get_all_values()[int(to_del)]
-    print('\n' + Back.RED + 'Are you sure you want to delete the following item?' + Style.RESET_ALL)
+
+    x = int(to_del)
+    row_to_del = SHEET.worksheet(current_user.title).get_all_values()[x]
+    print('\n' + Back.RED + 'Are you sure you want to delete the following '
+                            'item?' + Style.RESET_ALL)
     table = PrettyTable()
     table.field_names = ["Entry ID", "Service", "Username", "Password"]
-    table.add_row([row_to_del[0],row_to_del[1],row_to_del[2],decrypt_password(row_to_del[3])])
+    table.add_row([row_to_del[0], row_to_del[1], row_to_del[2],
+                  decrypt_password(row_to_del[3])])
     print(table)
     print('\n' + Fore.RED + ' ** Press y to delete ** ' + Style.RESET_ALL)
     print('Press any other key to return to the main menu')
@@ -312,14 +342,15 @@ def delete_from_vault():
 def check_leaks():
 
     test_data = (current_user.get_all_values()[1:])
- 
+
     for i in range(len(test_data)):
         d_pass = decrypt_password(test_data[i][3])
         del test_data[i][3]
         test_data[i].append(d_pass)
 
     table = PrettyTable()
-    table.field_names = ["Entry ID", "Service", "Username", "Password", "Data Breaches"]
+    table.field_names = ["Entry ID", "Service", "Username", "Password",
+                         "Data Breaches"]
 
     pyhibp.set_user_agent(ua="VaultGuard v1.0 (Code Institute Test Project)")
 
@@ -335,10 +366,11 @@ def check_leaks():
     if any_passwords_breached:
         print('\nThe following passwords were found to be compromised\n')
         print(table)
-        print('\n' + Back.RED + 'Consider changing these passwords as soon as possible' + Style.RESET_ALL + '\n')
+        print('\n' + Back.RED + 'Consider changing these passwords as '
+                                'soon as possible' + Style.RESET_ALL + '\n')
     else:
         print('Congratulations, no compromised passwords were found.')
-    
+
     print('Press any key to return to the main menu')
     key = getch.getch()
 
@@ -351,7 +383,7 @@ def display_login_menu():
     item2 = FunctionItem("Add a New Password", add_to_vault)
     item3 = FunctionItem("Edit a Vault Item", edit_vault_item)
     item4 = FunctionItem("Delete a Vault Item", delete_from_vault)
-    item5 = FunctionItem("Check for exposed Passwords", check_leaks) 
+    item5 = FunctionItem("Check for exposed Passwords", check_leaks)
 
     menu.append_item(item1)
     menu.append_item(item2)
@@ -371,7 +403,8 @@ def encrypt_password(p):
         iterations=480000,
         backend=default_backend()
     )
-    key = base64.urlsafe_b64encode(kdf.derive(bytes(key_source.encode('utf-8'))))
+    key = base64.urlsafe_b64encode(kdf.derive(bytes(
+                                                key_source.encode('utf-8'))))
     FKEY = Fernet(key)
     # ** Encrypt and return password using Fernet Key **
     return FKEY.encrypt(p.encode()).decode()
@@ -386,15 +419,16 @@ def decrypt_password(p):
         iterations=480000,
         backend=default_backend()
     )
-    key = base64.urlsafe_b64encode(kdf.derive(bytes(key_source.encode('utf-8'))))
+    key = base64.urlsafe_b64encode(kdf.derive(bytes(
+                                                key_source.encode('utf-8'))))
     FKEY = Fernet(key)
     # ** Encrypt and return password using Fernet Key **
     return FKEY.decrypt(p).decode()
 
-    
+
 def correct_password(user_id, user_password):
-    user_password_encoded = hashlib.sha256(bytes(user_password.encode('utf-8'))).hexdigest()
-    return(user_password_encoded == login_passwords[user_id])
+    up_en = hashlib.sha256(bytes(user_password.encode('utf-8'))).hexdigest()
+    return (up_en == login_passwords[user_id])
 
 
 def login():
@@ -405,16 +439,16 @@ def login():
         user_name = input("Please enter your username: \n")
         if user_name == '' or user_name == ' ' or len(user_name) < 3:
             print('\n')
-            print(Back.RED + 'You entered an invalid username, please try again' 
-                                                                + Style.RESET_ALL)
+            print(Back.RED + 'You entered an invalid username,'
+                             ' please try again' + Style.RESET_ALL)
             print('         Press any key to try again')
             key = getch.getch()
             continue
 
         elif user_name not in login_usernames:
             print('\n')
-            print(Back.RED + ' Username not found. Do you have an account? ' 
-                                                                + Style.RESET_ALL)
+            print(Back.RED + ' Username not found. Do you have an account? '
+                           + Style.RESET_ALL)
             print('            Press Enter to try again')
             print(' Or press any other key to return to the Main Menu')
             key = getch.getch()
@@ -424,7 +458,7 @@ def login():
                 return
 
         elif user_name in login_usernames:
-            for num,item in enumerate(login_usernames):
+            for num, item in enumerate(login_usernames):
                 if user_name == item:
                     user_id = num
             user_password = ''
@@ -445,8 +479,8 @@ def login():
                 break
             else:
                 print('\n')
-                print(Back.RED + ' Password Incorrect. Passwords are case-sensitive ' 
-                                                                    + Style.RESET_ALL)
+                print(Back.RED + ' Password Incorrect. Passwords are '
+                                 'case-sensitive ' + Style.RESET_ALL)
             print('            Press Enter to try again')
             print(' Or press any other key to return to the Main Menu')
             key = getch.getch()
@@ -457,14 +491,21 @@ def login():
 
 
 def strong_password(password, password2):
-    
-    # 1: Length, 2: Uppercase, 3: Lowercase, 4: Number, 5: Special Character, 6: Match
+
+    # 1: Length
+    # 2: Uppercase
+    # 3: Lowercase
+    # 4: Number
+    # 5: Special Character
+    # 6: Match
+
     strong_pass = []
     strong_pass.append(len(password) >= 8)
     strong_pass.append(bool(re.search("[A-Z]", password)))
     strong_pass.append(bool(re.search("[a-z]", password)))
     strong_pass.append(bool(re.search("[0-9]", password)))
-    strong_pass.append(bool(re.search(r'[!@#$%^&*()\[\]\-=_\\|;:,.<>?/~`"]', password)))
+    strong_pass.append(bool(re.search(
+                            r'[!@#$%^&*()\[\]\-=_\\|;:,.<>?/~`"]', password)))
     strong_pass.append(password == password2)
 
     # Write out Password Characteristics
@@ -485,12 +526,10 @@ def strong_password(password, password2):
     else:
         print(Back.RED + ' Password does not contain an uppercase letter ')
 
-
     if strong_pass[2]:
         print(Back.GREEN + ' Password contains a lowercase letter ')
     else:
         print(Back.RED + ' Password does not contain a lowercase letter ')
-
 
     if strong_pass[3]:
         print(Back.GREEN + ' Password contains a digit ')
@@ -500,15 +539,17 @@ def strong_password(password, password2):
     if strong_pass[4]:
         print(Back.GREEN + ' Password contains a special character ')
     else:
-        print(Back.RED + ' Password does not contain a special character ')  
+        print(Back.RED + ' Password does not contain a special character ')
         print(Back.YELLOW + 'Please include any one of these:')
         print(Back.YELLOW + '!@#$%^&*()-_=[]|;:,.<>?/~`"')
 
     if strong_pass[5]:
-        print(Back.GREEN + ' The Passwords you entered match \n' + Style.RESET_ALL)
+        print(Back.GREEN + ' The Passwords you entered match \n'
+                         + Style.RESET_ALL)
     else:
-        print(Back.RED + ' The Passwords you entered do not match \n' + Style.RESET_ALL)
-    
+        print(Back.RED + ' The Passwords you entered do not match \n'
+                       + Style.RESET_ALL)
+
     return strong_pass
 
 
@@ -517,19 +558,22 @@ def create_new_account():
     global user_data
     global login_usernames
     global login_passwords
-    # typewr('For creating an account with VaultGuard you need to create\n')
-    # typewr('a new ' + Fore.BLUE + 'USERNAME' + Style.RESET_ALL + ' and a new ' 
-    #                         + Fore.RED + 'MASTER PASSWORD\n' + Style.RESET_ALL)
-    # time.sleep(1)
-    # typewr('\nThe '+ Fore.BLUE + 'USERNAME' + Style.RESET_ALL + ' can be anything you choose,\n')
-    # typewr('but needs to be at least 3 characters long.\n')
-    # time.sleep(1)
-    # typewr('\nThe ' + Fore.RED + 'MASTER PASSWORD' + Style.RESET_ALL + ' is very important:\n')
-    # typewr('This will be the password with which\n')
-    # typewr('your stored information is kept safe.\n')
-    # time.sleep(1)
-    # typewr('\n' + Back.RED + 'Create a STRONG password that you will remember.\n' + Style.RESET_ALL)
-    # time.sleep(1)
+    typewr('For creating an account with VaultGuard you need to create\n')
+    typewr('a new ' + Fore.BLUE + 'USERNAME' + Style.RESET_ALL + ' and a new '
+                    + Fore.RED + 'MASTER PASSWORD\n' + Style.RESET_ALL)
+    time.sleep(1)
+    typewr('\nThe ' + Fore.BLUE + 'USERNAME' + Style.RESET_ALL +
+           ' can be anything you choose,\n')
+    typewr('but needs to be at least 3 characters long.\n')
+    time.sleep(1)
+    typewr('\nThe ' + Fore.RED + 'MASTER PASSWORD' + Style.RESET_ALL +
+           ' is very important:\n')
+    typewr('This will be the password with which\n')
+    typewr('your stored information is kept safe.\n')
+    time.sleep(1)
+    typewr('\n' + Back.RED + 'Create a STRONG password that you '
+                             'will remember.\n' + Style.RESET_ALL)
+    time.sleep(1)
     print('\nInclude upper and lowercase letters, digits, special, characters')
     print('(such as "!" or "@"), and make it at least 8 characters long.\n')
 
@@ -537,19 +581,20 @@ def create_new_account():
         new_username = input('Please enter your new username:\n')
         print('\n')
         if new_username in login_usernames:
-            print('\n' + Back.RED + '     That username already exists      ' + Style.RESET_ALL )
+            print('\n' + Back.RED + '     That username already exists      '
+                                  + Style.RESET_ALL)
             print(Fore.YELLOW + ' Please log into your existing account \n')
-            print(Style.RESET_ALL + 'Press any key to return to the Main Menu\n')
+            print(Style.RESET_ALL+'Press any key to return to the Main Menu\n')
             getch.getch()
             return
         if new_username == '' or new_username == ' ' or len(new_username) < 3:
-            print(Back.RED + 'You entered an invalid username, please try again' 
-                                                                + Style.RESET_ALL)
+            print(Back.RED + 'You entered an invalid username, '
+                             'please try again' + Style.RESET_ALL)
             print('         Press any key to try again\n')
             key = getch.getch()
             continue
         break
-    
+
     while True:
         new_password = input('Please enter your new password:\n')
         print('\n')
@@ -560,12 +605,16 @@ def create_new_account():
                 sys.stdout.write('.')
                 sys.stdout.flush()
                 time.sleep(0.1)
-            
+
             # Update Database with new User Login Data & new worksheet
-            new_password_encoded = hashlib.sha256(bytes(new_password.encode('utf-8'))).hexdigest()
-            user_data.append_row([new_username,new_password_encoded])
+            new_password_encoded = hashlib.sha256(bytes(
+                                    new_password.encode('utf-8'))).hexdigest()
+            user_data.append_row([new_username, new_password_encoded])
             SHEET.add_worksheet(title=new_username, rows=1000, cols=4)
-            SHEET.worksheet(new_username).append_row(['id', 'service', 'username', 'password'])
+            SHEET.worksheet(new_username).append_row(['id',
+                                                      'service',
+                                                      'username',
+                                                      'password'])
 
             # Close and reopen Google Sheet to ensure newest data available
             SHEET.client.session.close()
@@ -595,8 +644,6 @@ def create_new_account():
             else:
                 return
 
-    return ''
-
 
 def display_main_menu():
     f = open('banner.txt', 'r')
@@ -607,24 +654,17 @@ def display_main_menu():
     subtitle = " * Secure Your World, One Password at a Time. *"
     menu = ConsoleMenu(title, subtitle)
     login_item = FunctionItem("Existing User: Login", login)
-    create_account_item = FunctionItem("New User: Create Account", create_new_account)
+    create_account_item = FunctionItem("New User: Create Account",
+                                       create_new_account)
     menu.append_item(login_item)
     menu.append_item(create_account_item)
     return menu.show()
 
 
 clear_screen()
-display_main_menu()
+# display_main_menu()
 
+current_user = SHEET.worksheet('test')
+key_source = '12345'
 
-
-
-
-
-
-
-
-
-
-
-
+check_leaks()
