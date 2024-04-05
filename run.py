@@ -50,6 +50,15 @@ def typewr(text):
         sys.stdout.flush()
         time.sleep(0.03)
 
+
+def reorder_list_ids():
+    '''
+    This function Reorders the IDs of a user database, after an item has been deleted
+    '''
+    for i in range(1,len(current_user.col_values(1)[1:])+1):
+        current_user.update_cell(i+1, 1, i)
+
+
 def view_vault_read_only():
     gsheet_ids = SHEET.worksheet(current_user.title).col_values(1)[1:]
     gsheet_services = SHEET.worksheet(current_user.title).col_values(2)[1:]
@@ -177,13 +186,11 @@ def delete_from_vault():
     key = getch.getch()
     if key == 'y' or key == 'Y':
         SHEET.worksheet(current_user.title).delete_rows(int(to_del))
-        print('Item Deleted. Press any key to return to the main Menu')
+        reorder_list_ids()
+        print('\nItem Deleted. Press any key to return to the main Menu')
         key = getch.getch()
     else:
         return
-
-
-
 
 
 def check_leaks():
@@ -464,11 +471,11 @@ def display_main_menu():
 key_source = '12345'
 
 clear_screen()
-# display_main_menu()
+display_main_menu()
 
-current_user = SHEET.worksheet('test')
 
-delete_from_vault()
+
+
 
 
 
