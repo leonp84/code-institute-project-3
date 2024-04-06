@@ -195,36 +195,19 @@ Passwords are encrypted with a Secure Hash Algorithm 2 [(SHA-256)](https://en.wi
 
 ### Manual Testing
 
-**- Testing Header & Footer**
-| What will be Tested? | Expected Outcome | Test Procedure | Result |
+| What will be Tested? | Expected Outcome | Data Entered | Result |
 |--|--|--|--|
-|Header User Controls|The Toggle Theme button updates the colour palette on the entire site|Click on the toggle theme button|<span style="color: green; font-weight:bold">Pass</span>|
-|Header User Controls|The Sound Effect button enables and disables the app’s sound effect|Click on the sound effects button|<span style="color: green; font-weight:bold">Pass</span>|
-|Header User Controls|The Info box button hides/displays the information box|Click on the Info box button|<span style="color: green; font-weight:bold">Pass</span>|
-|Footer Link|The footer link opens the correct page in a new tab|Click on the Footer link|<span style="color: green; font-weight:bold">Pass</span>|
-
-<br>
-
-**- Testing To do List Data Input & Display**
-| What will be Tested? | Expected Outcome | Test Procedure | Result |
-|--|--|--|--|
-|Adding New Items Input Field|Users cannot enter invalid text for new items|Enter invalid text: Blank spaces and tabs| <span style="color: green; font-weight:bold">Pass</span> |
-|Adding New Items Input Field|Clicking the Priority box serves as input submit|Click the priority box with text present in input field| <span style="color: green; font-weight:bold">Pass</span> |
-|Adding New Items Input Field|As per above, but not with invalid (or non-existing) text|Click the priority box without text present in input field| <span style="color: green; font-weight:bold">Pass</span> |
-|Adding New Items Input Field|Pressing ‘Enter’ on new item text field serves as input submit|Press Enter in the text input field with valid text present| <span style="color: green; font-weight:bold">Pass</span> |
-|Adding New Items Input Field|As per above, but not with invalid (or non-existing) text|Press Enter in the text input field without valid text present| <span style="color: green; font-weight:bold">Pass</span> |
-|Adding New Items Input Field|Duplicate items are not allowed when adding new items|Enter Duplicate Item| <span style="color: green; font-weight:bold">Pass</span> |
-|Editing Existing Items|Users cannot enter invalid text when editing items|Enter invalid text: Blank spaces and tabs| <span style="color: green; font-weight:bold">Pass</span> |
-|Editing Existing Items|Duplicate items are not allowed when editing text of existing items|Enter Duplicate Item as new list text content| <span style="color: green; font-weight:bold">Pass</span> |
-|Remove Item Button|Users can always remove items from list|Click on Remove Item Icon| <span style="color: green; font-weight:bold">Pass</span> |
-|Check Items|Users are able to check items off their list|Click on Circle 'checkbox' to the left of item text| <span style="color: green; font-weight:bold">Pass</span> |
-|User Controls|Clicking ‘All’ shows all list items|Click on the ‘All’ button| <span style="color: green; font-weight:bold">Pass</span> |
-|User Controls|Clicking ‘Active’ only shows active list items|Click on the ‘Active’ button| <span style="color: green; font-weight:bold">Pass</span> |
-|User Controls|Clicking ‘Done’ only shows completed list items|Click on the ‘Done’ button| <span style="color: green; font-weight:bold">Pass</span> |
-|User Controls|Clicking ‘Clear’ allows users remove checked items from the list|Click on the ‘Clear’ button| <span style="color: green; font-weight:bold">Pass</span> |
-|User Controls|Clicking ‘Sort List’ allowed users to sort the to do list with priority items at the top and checked items at the bottom|Click on ‘Sort List’| <span style="color: green; font-weight:bold">Pass</span> |
-|User Controls|‘Sort List’ works when new items are added, items removed, checked, unchecked etc.|Click on ‘Sort List’| <span style="color: green; font-weight:bold">Pass</span> |
-|Items Left Check|The “items left” text update only when (1) items are checked, or (2) new items are added.|Review "Items left" number when list is in different states| <span style="color: green; font-weight:bold">Pass</span> |
+|Menus|Wrong Inputs aside from Menu options are not accepted in both the login and main menu| ‘q’ / ‘13’ / ‘ ‘ / ‘!’ / ‘3’ = Accepted|<span style="color: green; font-weight:bold">Pass</span>|
+|Create New Account|Usernames must be at least 3 Characters long and all empty spaces are not accepted|‘us’ / ‘!s’ / ‘   ‘ /  ‘use’ = Accepted|<span style="color: green; font-weight:bold">Pass</span>|
+|Create New Account|Usernames already in the database are not accepted for new users|'test' = Not Accepted|<span style="color: green; font-weight:bold">Pass</span>|
+|Create New Account|Passwords must be strong. At least 8 Characters long and contain (1) an Uppercase letter, (2) Lowercase letter, (3) Digit, (4) Special Character|‘Testpass9’ / ‘testPass’ / ‘testP!0s’ / ‘testPa!s9’ = Accepted|<span style="color: green; font-weight:bold">Pass</span>|
+|Login|Only valid usernames already in the database are accepted|‘test123’ / ‘Leon’ /  ‘test’ = Accepted|<span style="color: green; font-weight:bold">Pass</span>|
+|Login|Entered Passwords must match (the hashed versions) of those in database of said user|‘12345’ = Accepted|<span style="color: green; font-weight:bold">Pass</span>|
+|Other App Functions|“Show Saved Passwords” displays current vault. Space Bar allows users to see decrypted passwords.|Menu Option / Space Bar|<span style="color: green; font-weight:bold">Pass</span>|
+|Other App Functions|“Add a new Password” and “Edit Vault Item” does not accept empty service names, usernames, and passwords, but everything else is accepted.|‘ ‘ /  ‘      ‘ /  ‘\n’ /  ‘1’ = Accepted|<span style="color: green; font-weight:bold">Pass</span>|
+|Other App Functions|“Delete Vault Item” asks for user confirmation before deleting an item from the database.|Chose Item to Delete and gave confirmation with ‘y’|<span style="color: green; font-weight:bold">Pass</span>|
+|Other App Functions|All vault functions, except for “Add a New Password” checks if the user vault is empty before proceeding.|Chose these items with an empty vault.|<span style="color: green; font-weight:bold">Pass</span>|
+|Other App Functions|“Check for exposed Passwords” requires user confirmation before proceeding with HIBP API.|Gave confirmation with ‘y’|<span style="color: green; font-weight:bold">Pass</span>|
 
 
 ### Validator Testing
@@ -262,20 +245,35 @@ There are no unfixed bugs that I’m aware of.
 ## Deployment
 
 These are the steps I followed to deploy the project to Heroku:
+
 1.  I created an Heroku account and logged in.
+
 2.	I clicked New and created a new app on the dashboard.
+
 3.	I entered a unique name, selected the region (in my case, Europe), and clicked Create app.
+
 4.	Within the created app, I selected the tab, Settings.
+
 5.	At the Config Vars section, I clicked Reveal Config Vars.
+
 6.	To use Google Sheets, I added a new config var with the key CREDS. For the value, I pasted the contents of the creds.json file that was previously created when setting up the Google Sheets API.
+
 7.	I added another config var with the key PORT and set the value to 8000.
+
 8.	Below the Config Vars section, I clicked Add buildpack. I selected Python and saved. Then I added another buildpack and selected node.js. It was important that the buildpacks were shown in this order.
-9.	Back in the Integrated Development Environment, I created a list of requirements by typing pip3 freeze > requirements.txt into the terminal. (Note: In my specific case, the cryptography library was NOT added to the requirements.txt file when using freeze, so I manually entered cryptography into the requirements.txt file.)
+
+9.	Back in the Integrated Development Environment, I created a list of requirements by typing pip3 freeze > requirements.txt into the terminal. (Note: In my specific case, the cryptography library was NOT added to the requirements.txt file when using freeze, so I manually entered cryptography into the requirements.txt file).
+
 10.	I now ensured that a working version of my code was committed and pushed to GitHub
+
 11.	Now on Heroku again, I navigated to the Deploy tab.
+
 12.	I selected GitHub as the deployment method and connected to GitHub.
+
 13.	I searched for the repository name of the project and clicked connect.
+
 14.	Optionally, I enabled automatic deploys to deploy each time new code was pushed to the repository.
+
 15.	I then finally clicked Deploy Branch to deploy the project.
 
 
@@ -289,29 +287,32 @@ GitHub Repository: https://github.com/leonp84/code-institute-project-3/
 
 ### Content
 
--	The getch library and documentation proved very helpful for capturing keypresses within the python terminal.
+-	The Python [getch](https://pypi.org/project/getch/) library and documentation proved very helpful for capturing keypresses within the python terminal.
 
--	Menu generation was done with Console Menu.
-
--	For help with gspread, especially with updating individual cells: Xx
-
--	For help with basic cryptographic concepts, involving hashing and encrypting, the following resources were very helpful: (Xx
-
--	For the (very tricky) Regex statement to capture all special characters (lines Xx – Xx) I asked ChatGPT to help after inputting the exact special characters I needed to be checked.
-
--	Inspiration for the Typewriter function from my fellow Code Institute classmate Dibyanka
-
--	Other general inspiration from previous Code Institute projects by Xx and Xx
-
--	For help with getting a Favicon to work with Heroku deployment I looked at the work of the very talented Julia Wagner.
+-	Menu generation, color and tables was done with [Console Menu](https://pypi.org/project/console-menu/), [Colorama](https://pypi.org/project/colorama/) and [Prettytables](https://pypi.org/project/prettytable/).
 
 -	All other Python libraries used were credited and explained within the opening lines of the application codebase.
+
+-	For help with gspread, especially with updating individual cells the official [gspread documentation](https://docs.gspread.org/en/latest/) was great.
+
+-	For help with basic cryptographic concepts, involving hashing and encrypting, the following resources were very helpful: 
+    - [Password hashing and encryption](https://dev.to/dpills/python-secure-password-management-hashing-and-encryption--1246)
+    - [Python Cryptographic Library](https://stackoverflow.com/questions/71667730/encrypting-message-with-user-input-as-key-python-fernet)
+    - [Help with Python Fernet Key and Salt](https://github.com/pyca/cryptography/issues/1333)
+
+-	For the (very tricky) Regex statement to capture all special characters in a newly generated password I asked [ChatGPT](https://chat.openai.com/) to help after inputting the exact special characters I needed to be checked.
+
+-	Inspiration for the Typewriter function from my fellow Code Institute classmate [Priyanka Dhanabal](https://github.com/Priyanka-Dhanabal/cut-2-chase-pp3/blob/main/run.py#L11)
+
+-	Other general inspiration from previous Code Institute projects [Precious Password by Daniel Stauffer](https://github.com/RebellionWebdesign/precious-password/) and [Lockminder by Danilo Martins](https://github.com/Danvm94/lockminder)
+
+-	For help with getting a Favicon to work with Heroku deployment I looked at the work of the very talented [Julia Wagner](https://github.com/Julia-Wagner/PyChef).
 
 
 ### Media
 
 -	ASCII Banner Logo generated with https://patorjk.com/software/taag
 
--	Favicon image from Pexels
+-	Favicon image from [Pixabay](https://cdn.pixabay.com/photo/2020/04/07/15/07/vault-5013752_1280.png)
 
--	Background image from Xx
+-	Background image by [Jason Dent](https://unsplash.com/@jdent) on Unsplash

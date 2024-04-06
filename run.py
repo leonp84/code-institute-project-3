@@ -199,7 +199,7 @@ def add_to_vault():
     try:
         add_id = str(int(SHEET.worksheet(current_user.title)
                          .col_values(1)[-1])+1)
-    except Exception:
+    except ValueError:
         add_id = 1
 
     # The 'while True' loops below enforce strong data handling
