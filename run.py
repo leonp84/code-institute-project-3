@@ -174,7 +174,7 @@ def view_vault():
             print(Fore.YELLOW + '\nYour Vault is currently empty. '
                                 'Please add your first item.\n'
                                 + Style.RESET_ALL)
-        print('\nPress ' + Fore.BLUE + 'Space Bar'
+        print('\nPress ' + Fore.GREEN + 'Space Bar'
                          + Style.RESET_ALL + ' to show/hide passwords')
         print('Press ' + Fore.YELLOW + 'Enter'
                        + Style.RESET_ALL + ' to return to the main menu')
@@ -312,7 +312,7 @@ def edit_vault_item():
     current_user.update_cell(to_edit, 2, add_service)
     current_user.update_cell(to_edit, 3, add_username)
     current_user.update_cell(to_edit, 4, encrypt_password(add_password))
-    print('\nItem ' + Fore.BLUE + f'ID# {to_edit-1}' + Style.RESET_ALL
+    print('\nItem ' + Fore.GREEN + f'ID# {to_edit-1}' + Style.RESET_ALL
                     + ' Updated. Press any key to return to the main Menu')
     key = getch.getch()
     return
@@ -394,7 +394,7 @@ def check_leaks():
 
     typewr('The list of passwords in your vault '
            'will now be checked against a \n')
-    typewr('known list of compromised passwords on' + Fore.BLUE +
+    typewr('known list of compromised passwords on' + Fore.GREEN +
            ' https://haveibeenpwned.com/\n' + Style.RESET_ALL)
     time.sleep(1)
     typewr('\nFor this purpose, ' + Fore.YELLOW + 'encrypted ("hashed") '
@@ -617,9 +617,11 @@ def strong_password(password, password2):
 
     # Write out Password Characteristics
     if all(strong_pass):
-        typewr('\n' + Back.GREEN + ' PASSWORD IS STRONG \n')
+        typewr('\n' + Back.GREEN + ' PASSWORD IS STRONG '
+                                 + Style.RESET_ALL + '\n')
     else:
-        typewr('\n' + Back.RED + ' PASSWORD IS TOO WEAK \n')
+        typewr('\n' + Back.RED + ' PASSWORD IS TOO WEAK '
+                               + Style.RESET_ALL + '\n')
 
     time.sleep(2)
 
@@ -673,10 +675,10 @@ def create_new_account():
     global login_usernames
     global login_passwords
     typewr('For creating an account with VaultGuard you need to create\n')
-    typewr('a new ' + Fore.BLUE + 'USERNAME' + Style.RESET_ALL + ' and a new '
+    typewr('a new ' + Fore.GREEN + 'USERNAME' + Style.RESET_ALL + ' and a new '
                     + Fore.RED + 'MASTER PASSWORD\n' + Style.RESET_ALL)
     time.sleep(1)
-    typewr('\nThe ' + Fore.BLUE + 'USERNAME' + Style.RESET_ALL +
+    typewr('\nThe ' + Fore.GREEN + 'USERNAME' + Style.RESET_ALL +
            ' can be anything you choose,\n')
     typewr('but needs to be at least 3 characters long.\n')
     time.sleep(1)
@@ -702,7 +704,7 @@ def create_new_account():
             print(Style.RESET_ALL+'Press any key to return to the Main Menu\n')
             getch.getch()
             return
-        if new_username == '' or new_username == ' ' or len(new_username) < 3:
+        if not (re.findall(r"\w", new_username)) or len(new_username) < 3:
             print(Back.RED + 'You entered an invalid username, '
                              'please try again' + Style.RESET_ALL)
             print('         Press any key to try again\n')

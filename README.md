@@ -20,23 +20,26 @@ Password: 	**12345**
 1. [Overview](#overview)
 2. [UX](#ux)
     - [User Stories](#user-stories)
+        - [User](#user)
+        - [Site Administrator](#site-administrator)
     - [Site Concept](#site-concept)
     - [Flowchart](#flowchart)
     - [Site Design](#site-design)
 3. [Features](#features)
     - [Existing Features](#existing-features)
-        - [Site Logo](#site-logo)
-        - [Header](#header)
-        - [Add New User Item](#add-new-user-item)
-        - [Main List Display](#main-list-display)
-        - [User Controls](#user-controls)
-        - [Optional Information Box](#optional-information-box)
-        - [Footer](#footer)
+        - [Login Menu](#login-menu)
+        - [Login Option](#login-option)
+        - [Create New Account Option](#create-new-account-option)
+        - [View Vault](#view-vault)
+        - [Add Password](#add-password)
+        - [Delete Password](#delete-password)
+        - [Edit Vault Item](#edit-vault-item)
+        - [Check Data Breaches](#check-data-breaches)
+        - [Encryption Details](#encryption-details)
     - [Future Ideas](#future-ideas)
 4. [Testing](#testing)
     - [Manual Testing](#manual-testing)
     - [Validator Testing](#validator-testing)
-    - [Lighthouse Testing](#lighthouse-testing)
     - [Bugs](#bugs)
         - [Fixed](#fixed)
         - [Unfixed](#unfixed)
@@ -48,7 +51,7 @@ Password: 	**12345**
 
 ## Overview
 
-VaultGuard is a web based personal password manager, that allows users to store a list of usernames and passwords to a variety of services that they use. Each new user created a personal account with a strong master password that is verified, before they can then process to create a ‘vault’ or list of username + password credentials that they would like to save.
+VaultGuard is a web based personal password manager, that allows users to store a list of usernames and passwords to a variety of services that they use. Each new user created a personal account with a strong master password that is verified, before they can then proceed to create a ‘vault’ or list of username + password credentials that they would like to save.
 
 Users can add, edit, remove, or view vault items. VaultGuard also provides functionality for checking whether stored passwords were leaked in any previous public data breaches.
 
@@ -185,7 +188,7 @@ Passwords are encrypted with a Secure Hash Algorithm 2 [(SHA-256)](https://en.wi
 
 ### Future Ideas
 
-1.	**Improve security**: As mentioned in the [start](#vaultguard) of this document, as I am not trained in cryptography, the app certainly needs an overview by a professional software developer with experience in cyber security, for suggestions o improving the safekeeping of stored information.
+1.	**Improve security**: As mentioned in the [start](#overview) of this document, as I am not trained in cryptography, the app certainly needs an overview by a professional software developer with experience in cyber security, for suggestions o improving the safekeeping of stored information.
 
 2.	**Front End**: With the back-end side of the password manager in place, it would be nice to also build a visually stylish front end around the theme of an actual bank vault. This would naturally make the app more accessible to a larger audience.
 
@@ -221,11 +224,11 @@ The PEP8 Python formatting [validator](https://pep8ci.herokuapp.com/) initially 
 #### Fixed
 -	The bug that took the longest time to fix had to do with password encryption. I discovered that when tying encryption to a master password, the Fernet function (which is part of the Python cryptography library) still used salt (see [Encryption Details](#encryption-details) above) which meant that a Fernet Key needed to be stored locally somewhere within the database to enable to users to decrypt passwords once they log out of the app, and back in. I couldn’t do this as the Gspread library used JSON to write to Google Sheets and JSON could now store salt (in bytes) to Google Sheet. I overcame this (after much research) by tying the salt generation also to the user Master Password. I’m sure there are better ways to do this, involving Key Management Systems, but these were beyond the scope of this project. As it stands users are able to encrypt and decrypt passwords only when their Master Passwords are initially entered correctly.
 
--	Users were able to enter three black spaces as a new username which was excepted. Since the input validation only checked for an input length >= 3, three black spaces were able to pass. I then added an extra validation which uses a regular expression to only allow new usernames that also contain a character.
+-	Users were able to enter three black spaces as a new username which was excepted. Since the input validation only checked for an input length >= 3, three black spaces were able to pass. I then added an extra validation which uses a regular expression to only allow new usernames that also contains a character.
 
 -	The PEP8 validator initially showed a multitude of issues, mostly having to do with visual formatting. These were all fixed by removing trailing or missing white space, shortening lines to a maximum of 79 characters and adding a final blank line to the end of the file.
 
--	In the single instance where I used a `try … except` block, the PEP8 validator did not like the use of a bare `except:` statement. I updated this to `except KeyError:`
+-	In the single instance where I used a `try … except` block, the PEP8 validator did not like the use of a bare `except:` statement. I updated this to `except ValueError:`
 
 -	For validating new login password strength, I struggled to have the computer also check for a variety of special characters. With the regular expression statement, since so many of the special characters required escaping with the `\` key, this proved challenging. I finally managed with some help (see credit below).
 
@@ -289,7 +292,7 @@ GitHub Repository: https://github.com/leonp84/code-institute-project-3/
 
 -	The Python [getch](https://pypi.org/project/getch/) library and documentation proved very helpful for capturing keypresses within the python terminal.
 
--	Menu generation, color and tables was done with [Console Menu](https://pypi.org/project/console-menu/), [Colorama](https://pypi.org/project/colorama/) and [Prettytables](https://pypi.org/project/prettytable/).
+-	Menu generation, color and tables were done with [Console Menu](https://pypi.org/project/console-menu/), [Colorama](https://pypi.org/project/colorama/) and [Prettytables](https://pypi.org/project/prettytable/).
 
 -	All other Python libraries used were credited and explained within the opening lines of the application codebase.
 
@@ -300,19 +303,19 @@ GitHub Repository: https://github.com/leonp84/code-institute-project-3/
     - [Python Cryptographic Library](https://stackoverflow.com/questions/71667730/encrypting-message-with-user-input-as-key-python-fernet)
     - [Help with Python Fernet Key and Salt](https://github.com/pyca/cryptography/issues/1333)
 
--	For the (very tricky) Regex statement to capture all special characters in a newly generated password I asked [ChatGPT](https://chat.openai.com/) to help after inputting the exact special characters I needed to be checked.
+-	For the (very tricky) regex statement to capture all special characters in a newly generated password I asked [ChatGPT](https://chat.openai.com/) to help after inputting the exact special characters I needed to be checked.
 
 -	Inspiration for the Typewriter function from my fellow Code Institute classmate [Priyanka Dhanabal](https://github.com/Priyanka-Dhanabal/cut-2-chase-pp3/blob/main/run.py#L11)
 
 -	Other general inspiration from previous Code Institute projects [Precious Password by Daniel Stauffer](https://github.com/RebellionWebdesign/precious-password/) and [Lockminder by Danilo Martins](https://github.com/Danvm94/lockminder)
 
--	For help with getting a Favicon to work with Heroku deployment I looked at the work of the very talented [Julia Wagner](https://github.com/Julia-Wagner/PyChef).
+-	For help with getting a favicon to work with Heroku deployment I looked at the work of the very talented [Julia Wagner](https://github.com/Julia-Wagner/PyChef).
 
 
 ### Media
 
 -	ASCII Banner Logo generated with https://patorjk.com/software/taag
 
--	Favicon image from [Pixabay](https://cdn.pixabay.com/photo/2020/04/07/15/07/vault-5013752_1280.png)
+-	Favicon image from [Pixabay](https://cdn.pixabay.com/photo/2020/04/07/15/07/vault-5013752_1280.png).
 
--	Background image by [Jason Dent](https://unsplash.com/@jdent) on Unsplash
+-	Background image by [Jason Dent](https://unsplash.com/@jdent) on Unsplash.
