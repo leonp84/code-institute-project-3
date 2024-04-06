@@ -85,7 +85,7 @@ def generate_password():
             length = int(length)
             break
 
-    # Strong passwords should include at least 1 of each in p1 - p5
+    # Strong passwords should include at least 1 of each in p1 - p4
     p1 = [i for i in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ']
     p2 = [i for i in 'abcdefghijklmnopqrstuvwxyz']
     p3 = [i for i in '0123456789']
@@ -120,7 +120,7 @@ def generate_password():
 
 def view_vault_read_only():
     '''
-    Displays vault before CRUD operations
+    Displays vault before CRUD operations, with passwords masked.
     '''
     gsheet_ids = SHEET.worksheet(current_user.title).col_values(1)[1:]
     gsheet_services = SHEET.worksheet(current_user.title).col_values(2)[1:]
@@ -321,7 +321,7 @@ def edit_vault_item():
 def delete_from_vault():
     '''
     Allows user to remove exsiting credential from vault. Requires confirmation
-    before deletion. Updates Credential ID's (on Google Sheet database) after
+    before deletion. Updates Credential IDs (on Google Sheet database) after
     item deletion.
     '''
     gsheet_ids = SHEET.worksheet(current_user.title).col_values(1)[1:]
@@ -483,7 +483,9 @@ def encrypt_password(p):
     '''
     Uses SHA256 algorith to encrypt user passwords before writing them to the
     Google Sheet database. This function uses the built in
-    Python Cryptography library.
+    Python Cryptography library. 'key_source' is tied to the user master
+    password during account creation or login, and stays that way for the
+    remainder of the session.
     '''
     salt = bytes(key_source.encode('utf-8'))
     kdf = PBKDF2HMAC(
@@ -668,7 +670,7 @@ def create_new_account():
     password. If successfull, user credentials are stored in the Google Sheet
     Database (with the user password being hashed for future comparison).
     A new user database is then openened (a new Google Sheet Worksheet)
-    to store user items. This function has strong data handling.
+    to store user items. This function has strong input handling.
     '''
     global SHEET
     global user_data
@@ -757,7 +759,7 @@ def create_new_account():
             break
 
         else:
-            print('     PLEASE ENTER A NEW STRONG PASSWORD')
+            print('       PLEASE ENTER A NEW STRONG PASSWORD')
             print('            Press Enter to try again')
             print(' Or press any other key to return to the Main Menu')
             key = getch.getch()
