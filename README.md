@@ -6,8 +6,9 @@ Welcome to the Readme file for VaultGuard, a web based personal password manager
 
 
 **Link to Live Site: https://vault-guard-f006577d0925.herokuapp.com/**
-<br>
-<br>
+<br><br>
+**Link to Google Sheet Database: [vault_guard_db](https://docs.google.com/spreadsheets/d/1UMGiBWNZ3uqAMRuP8UlARnMTnyuvrXl4unRxFeW5Isg/edit?usp=sharing)**
+<br><br>
 *For testing the application, please use the following login details:*
 
 Username: 	**test**
@@ -194,6 +195,9 @@ The process is first explained to the user and confirmation requested before pro
 #### Encryption Details
 
 VaultGuard stores a list of user’s credentials in a Google Sheets Database.
+
+**Link to Google Sheet Database: [vault_guard_db](https://docs.google.com/spreadsheets/d/1UMGiBWNZ3uqAMRuP8UlARnMTnyuvrXl4unRxFeW5Isg/edit?usp=sharing)**
+
 Passwords are encrypted with a Secure Hash Algorithm 2 [(SHA-256)](https://en.wikipedia.org/wiki/SHA-2)  that uses random data as additional input [(salt)](https://en.wikipedia.org/wiki/Salt_(cryptography)) tied to the users Master Password. User App passwords (i.e. the passwords users use to login to VaultGuard) are similarly Hashed with a SHA-256 algorithm.
 
 
