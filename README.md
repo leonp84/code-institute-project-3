@@ -5,7 +5,7 @@ Welcome to the Readme file for VaultGuard, a web based personal password manager
 ![VaultGuard Device Mockups](readme-images/all-devices-black.webp)
 
 
-**Link to Live Site: https://vault-guard-f006577d0925.herokuapp.com/**
+**Link to Live Site: https://vault-guard-ci-4cd8616b935a.herokuapp.com/**
 <br><br>
 **Link to Google Sheet Database: [vault_guard_db](https://docs.google.com/spreadsheets/d/1UMGiBWNZ3uqAMRuP8UlARnMTnyuvrXl4unRxFeW5Isg/edit?usp=sharing)**
 <br><br>
@@ -302,7 +302,7 @@ These are the steps I followed to deploy the project to Heroku:
 
 ### Links
 
-Deployed Website: https://vault-guard-f006577d0925.herokuapp.com/<br>
+Deployed Website: https://vault-guard-ci-4cd8616b935a.herokuapp.com/<br>
 GitHub Repository: https://github.com/leonp84/code-institute-project-3/
 
 
